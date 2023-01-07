@@ -5,12 +5,19 @@ from bs4 import BeautifulSoup as bs
 import calendar
 import random
 import os
+import time
+from itertools import cycle
+
 
 user_agents_list = [
     'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'
 ]
+list_proxy = [ None,  'http://110.234.32.234:3128']
+proxy_cycle = cycle(list_proxy)
+proxy = next(proxy_cycle)
+
 for year in range(2017,2024):
     for month in range(1,13):
         month = "{:02d}".format(month)
@@ -19,15 +26,33 @@ for year in range(2017,2024):
 
             page_link = f"https://bankurapolice.org/{year}/{month}/page/{page_number}/?post_type=fir"
 
+            proxies = {
+                "http": proxy,
+                "https":proxy
+            }
+
             try:
-                resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)})
+                resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)},  proxies=proxies)
             except:
                 try:
-                    resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)})
+                    resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)}, proxies=proxies)
                 except:
                     continue
+            
+            if resp.status_code == 403:
+                while(True):
+                    print("\033[91m" + str(page_link) + "\t"+str(resp.status_code))
+                    proxy = next(proxy_cycle)
+                    print("\033[32m" + "Using proxy: "+ str(proxy))
+                    resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)}, proxies=proxies)
+                    if resp.status_code == 403:
+                        print("sleeping")
+                        time.sleep(1000)
+                    else:
+                        break
+                    
 
-            if resp.status_code !=200:
+            if resp.status_code == 404:
                 print("\033[91m" + str(page_link) + "\t"+str(resp.status_code))
                 break
             
