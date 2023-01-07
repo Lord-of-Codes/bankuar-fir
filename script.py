@@ -6,8 +6,11 @@ import calendar
 import random
 import os
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
-
+user_agents_list = [
+    'Mozilla/5.0 (iPad; CPU OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.83 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36'
+]
 for year in range(2017,2024):
     for month in range(1,13):
         month = "{:02d}".format(month)
@@ -17,10 +20,10 @@ for year in range(2017,2024):
             page_link = f"https://bankurapolice.org/{year}/{month}/page/{page_number}/?post_type=fir"
 
             try:
-                resp = requests.get(page_link, headers=headers)
+                resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)})
             except:
                 try:
-                    resp = requests.get(page_link, headers=headers)
+                    resp = requests.get(page_link, headers={'User-Agent': random.choice(user_agents_list)})
                 except:
                     continue
 
@@ -46,7 +49,7 @@ for year in range(2017,2024):
                     continue
 
                 try:
-                    file = requests.get(pdf_link, timeout=5, headers=headers)
+                    file = requests.get(pdf_link, timeout=5, headers={'User-Agent': random.choice(user_agents_list)})
                 except:
                     continue
 
