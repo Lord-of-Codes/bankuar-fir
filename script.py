@@ -6,6 +6,8 @@ import calendar
 import random
 import os
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0'}
+
 for year in range(2017,2024):
     for month in range(1,13):
         month = "{:02d}".format(month)
@@ -15,10 +17,10 @@ for year in range(2017,2024):
             page_link = f"https://bankurapolice.org/{year}/{month}/page/{page_number}/?post_type=fir"
 
             try:
-                resp = requests.get(page_link)
+                resp = requests.get(page_link, headers=headers)
             except:
                 try:
-                    resp = requests.get(page_link)
+                    resp = requests.get(page_link, headers=headers)
                 except:
                     continue
 
@@ -44,7 +46,7 @@ for year in range(2017,2024):
                     continue
 
                 try:
-                    file = requests.get(pdf_link, timeout=5)
+                    file = requests.get(pdf_link, timeout=5, headers=headers)
                 except:
                     continue
 
